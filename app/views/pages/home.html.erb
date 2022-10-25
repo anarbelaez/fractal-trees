@@ -1,18 +1,63 @@
-<style>
-  p, h1 {
-    text-align: center;
-    font-family: "Verdana";
+<script>
+function setup(){
+  createCanvas(1000,600);
+  noLoop();
+}
+
+function draw(){
+  strokeWeight(10);
+  translate(width/2,height-2);
+  branch(0);
+
+}
+
+
+function branch(depth){
+  if (depth < 10) {
+    line(0,0,0,-height/10); // draw a line going up
+    {
+      translate(0,-height/10); // move the space upwards
+      rotate(random(-0.05,0.05));  // random wiggle - ramas mas deformes a valoes mas altos
+
+      if (random(1.0) < 0.6){ // branching
+        rotate(0.3); // rotate to the right
+        scale(0.8); // scale down
+
+        push(); // now save the transform state
+        branch(depth + 1); // start a new branch!
+        pop(); // go back to saved state
+
+        rotate(-0.6); // rotate back to the left
+
+        push(); // save state
+        branch(depth + 1);   // start a second new branch
+        pop(); // back to saved state
+     }
+      else { // no branch - continue at the same depth
+        branch(depth);
+      }
+    }
+  } else
+  {
+    let = lengthFactor = 200;
+    fill(random(255),random(255),random(255))
+    noStroke();
+    let greenBlueGradient = drawingContext.createLinearGradient(50, 75, 100, 100);
+  greenBlueGradient.addColorStop(0, 'yellowgreen');
+  greenBlueGradient.addColorStop(.7, 'turquoise');
+  drawingContext.fillStyle = greenBlueGradient;
+  drawingContext.rect(30, 20, 55, 55, 20, 15, 10, 5);
+  drawingContext.fill();
+
   }
 
-  canvas {
-    padding: 0;
-    margin: auto;
-    display: block;
-    width: 450px;
-    height: 450px;
-    margin: auto;
-  }
-</style>
+}
 
-<h1>FRACTAL TREES</h1>
-<canvas style="border:2px solid #c0c0c0;" id="canvas"></canvas>
+
+
+
+function mouseReleased(){
+  redraw();
+}
+
+</script>

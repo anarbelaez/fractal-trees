@@ -1,0 +1,115 @@
+
+<script>
+// Coding Rainbow
+// Daniel Shiffman
+// http://patreon.com/codingtrain
+// Code for: https://youtu.be/fcdNSZ9IzJM
+
+let tree = [];
+let leaves = [];
+
+let count = 0;
+
+function setup() {
+  // Creamos un canvas
+  createCanvas(400, 400);
+  // Estos son los primeros dos puntos que definen la primera rama o tronco
+  let a = createVector(width / 2, height);
+  let b = createVector(width / 2, height - 100);
+  let root = new Branch(a, b);
+
+  // La primera rama del tree es ese root
+  tree[0] = root;
+}
+
+function mousePressed() {
+  // i inicia en 0 y recorre el for a 1, 2, 3...
+  for (let i = tree.length - 1; i >= 0; i--) {
+    if (!tree[i].finished) {
+      tree.push(tree[i].branchA());
+      tree.push(tree[i].branchB());
+    }
+    tree[i].finished = true;
+  }
+  count++;
+
+  // En la sexta generacion de ramas se crean las hojas
+  if (count === 6) {
+    for (var i = 0; i < tree.length; i++) {
+      if (!tree[i].finished) {
+        let leaf = tree[i].end.copy();
+        leaves.push(leaf);
+      }
+    }
+  }
+
+}
+
+function draw() {
+  background(51);
+
+  for (var i = 0; i < tree.length; i++) {
+    tree[i].show();
+    // tree[i].jitter();
+  }
+
+  for (var i = 0; i < leaves.length; i++) {
+    fill(255, 0, 100, 100);
+    noStroke();
+    ellipse(leaves[i].x, leaves[i].y, 8, 8);
+    leaves[i].y += random(0, 2);
+  }
+
+}
+</script>
+
+<script>
+class Branch {
+
+  // Una branch tiene un punto de inicio y uno final
+  constructor(begin, end) {
+    this.begin = begin;
+    this.end = end;
+    // Una vez que cambia esta variable termina el crecimiento del arbol
+    this.finished = false;
+  }
+
+  // Movimiento raro
+  jitter() {
+    this.end.x += random(-1, 1);
+    this.end.y += random(-1, 1);
+  }
+
+  // Metodo para mostrar el arbol, este es lo que dibuja
+  show() {
+    stroke(255);
+    // strokeWeight(4);
+    line(this.begin.x, this.begin.y, this.end.x, this.end.y);
+  }
+
+  // Ramas de la derecha
+  branchA() {
+    // Creo que esta es la primera rama
+    let dir = p5.Vector.sub(this.end, this.begin);
+    // Se rota un angulo positivo
+    dir.rotate(PI / 6);
+    // Se dirminuye su tamanio
+    dir.mult(0.67);
+    // Se une el vector al final de la primera rama
+    let newEnd = p5.Vector.add(this.end, dir);
+    // Se llama asi misma, se crea otra rama cada vez
+    let b = new Branch(this.end, newEnd);
+    return b;
+  }
+
+  branchB() {
+    let dir = p5.Vector.sub(this.end, this.begin);
+    dir.rotate(-PI / 4);
+    dir.mult(0.67);
+    let newEnd = p5.Vector.add(this.end, dir);
+    let b = new Branch(this.end, newEnd);
+    return b;
+  }
+}
+
+</script>

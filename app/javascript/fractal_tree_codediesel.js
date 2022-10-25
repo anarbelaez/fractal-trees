@@ -83,29 +83,31 @@ var tree = {
         if (depth < 12)
         {
             this.ctx.beginPath();
-            this.ctx.moveTo(0,0);
-            this.ctx.lineTo(0,-(this.height)/10);
-            this.ctx.stroke();
+            this.ctx.moveTo(0,0); // Se centra el arbol ya que se habia transladado el punto de inicio
+            this.ctx.lineTo(0,-(this.height)/10); // La primera branch, este es el tronco principal
+            this.ctx.stroke(); // No se, en p5js esto se refiere darle color a la linea
 
-            this.ctx.translate(0,-this.height/10);
+            this.ctx.translate(0,-this.height/10); // El punto inicial de la proxima rama inicia en el punto final del tronco
             // Random integer from -0.1 to 0.1
-            var randomN = -(Math.random() * 0.2) + 0.1;
+            var randomN = -(Math.random() * 0.2) + 0.1; // Cada vez se crea un numero aleatorio desde -1 a 1
 
-            this.ctx.rotate(randomN);
+            this.ctx.rotate(randomN); // Rotacion de la rama
 
+            // Aqui se dibuja el arbol, recuerde que el spread se refiere a lo que se extienden las ramas, a valores mas altos
+            // arboles mas pequeños
             if ((Math.random() * 1) < this.spread)
             {
                 // Draw the left branches
-                this.ctx.rotate(-0.3);
+                this.ctx.rotate(-0.3); // Angulo negativo va hacia la izquierda
                 this.ctx.scale(0.7,0.7);
-                this.ctx.save();
-                this.branch(depth + 1);
+                this.ctx.save(); // Este seria el push en el p5js
+                this.branch(depth + 1); //Se suma 1, recuerde que este valor va hasta 12
                 // Draw the right branches
-                this.ctx.restore();
-                this.ctx.rotate(0.6);
-                this.ctx.save();
-                this.branch(depth + 1);
-                this.ctx.restore();
+                this.ctx.restore(); // Este seria el pop en el p5js
+                this.ctx.rotate(0.6); // Angulo positivo, ramas hacia la derecha
+                this.ctx.save(); // Push
+                this.branch(depth + 1); // Se vuelve a llamar el metodo de la branch con 1 mas
+                this.ctx.restore(); // Pop
             }
             else
             {
@@ -122,7 +124,7 @@ var tree = {
                     lengthFactor = 10;
                 }
                 this.ctx.fillStyle = this.leavesColor;
-                this.ctx.fillRect(0, 0, this.leaveType, lengthFactor);
+                this.ctx.fillRect(0, 0, this.leaveType, lengthFactor); // fillRect dibuja un rectangulo
                 this.ctx.stroke();
             }
         }
