@@ -9,77 +9,47 @@ canvas {
 function setup() {
   createCanvas(600, 500);
   noLoop();
-  let sunWidthPos = width * random(0.2, 0.8);
-  let sunHeightPos = height * random(0.2, 1);
-  let colIndex = floor(map(sunHeightPos, 160, height, 4, -1));
-  let backCol = [
-          [63, 59, 108],
-          [98, 79, 130],
-          [159, 115, 171],
-          [163, 199, 214]
-        ]
-  backgroundGradient(backCol[3]);
+  backgroundGradient();
   drawSun();
-  print(colIndex, backCol[colIndex])
   let  defaultXoff = random(0, 1000);
-
-        backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
-        backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
-    backgroundMountains(50, 110, 0.006,[65,66,2],defaultXoff);
-    backgroundMountains(15, 65, 0.1,[236,59,6],defaultXoff);
-    backgroundMountains(15, 45, 0.8,[0,255,0],defaultXoff);
-
+  backgroundMountains(56, 250, 0.015, [28,56,99],defaultXoff);
+  backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
+  backgroundMountains(50, 110, 0.006,[65,66,2],defaultXoff);
+  backgroundMountains(15, 65, 0.1,[236,59,6],defaultXoff);
+  backgroundMountains(15, 45, 0.8,[0,255,0],defaultXoff);
 }
 
-function backgroundGradient(col) {
-  let c1 = [];
-  let c2;
-
-  c2 = color(col);
-  for (let c of col) {
-    c1.push(c + 60);
-  }
-  c1 = color(c1);
-
+function backgroundGradient() {
   for (let y = 0; y < height; y += 0.5) {
     n = map(y, 0, height, 0, 1);
-
     let newc = lerpColor(color(14, 24, 95), color(185, 255, 248), n);
     stroke(newc);
     line(0, y, width, y + 1);
   }
-
 }
 
 function drawSun() {
-  // let colG = map(sunHeight, 160, 640, 200, 50);
-  // let colB = map(sunHeight, 160, 640, 50, 0);
-  // let size = map(sunHeight, 160, 640, 0, 100);
-
-  // noStroke();
-  // fill(255, colG, colB, 50);
-  // ellipse(sunWidth, sunHeight, size);
   translate(0,0);
   noStroke();
-    fill(230, 230, 230, 50);
-    ellipse(200, 130, 170, 170);
-    fill(230, 230, 230, 150);
-    ellipse(200, 130, 130, 130);
-    fill(230, 230, 230, 200);
-    ellipse(200, 130, 110, 110);
-    fill(230, 230, 230);
-    ellipse(200, 130, 70, 70);
+  fill(230, 230, 230, 50);
+  ellipse(200, 130, 170, 170);
+  fill(230, 230, 230, 150);
+  ellipse(200, 130, 130, 130);
+  fill(230, 230, 230, 200);
+  ellipse(200, 130, 110, 110);
+  fill(230, 230, 230);
+  ellipse(200, 130, 70, 70);
 }
 
 function backgroundMountains(hMin, hMax, inc, col, defaultXoff) {
-
-
   var xoff = defaultXoff
-
   let y;
 
   noStroke();
-  fill(color(col),75);
+  squareColor = color(col);
+  squareColor.setAlpha(128);
+  fill(squareColor);
+  // fill(color(col));
 
   beginShape();
   for (let x = 0; x < width; x++) {
@@ -103,14 +73,14 @@ function draw(){
 }
 
 function branch(depth){
-  if (depth < 12) {
+  if (depth < 11) {
     line(0,0,0,-height/10); // draw a line going up
     {
       translate(0,-height/10); // move the space upwards
       rotate(random(-0.2,0.2));  // random wiggle - ramas mas deformes a valoes mas altos
 
-      if (random(1.0) < 0.8){ // branching
-        rotate(0.3); // rotate to the right
+      if (random(1.0) < 0.7){ // branching
+        rotate(0.3); // rotate to the right 0.25 arbolito en copita
         scale(0.8); // scale down
 
         push(); // now save the transform state
@@ -135,7 +105,11 @@ function branch(depth){
     let col = [[255, 185, 185],[255, 221, 210],[255, 141, 199]]
       // fill(random(188,255), 226, 158, 250)
 
-    fill(28, 103, 88)
+    let coly = [28, 103, 88]
+  squareColor = color(coly);
+  squareColor.setAlpha(128);
+  fill(squareColor);
+    // fill(28, 103, 88)
     // stroke(100, 126, 0)
 
     // fill(205,83,107)
@@ -157,7 +131,7 @@ function branch(depth){
     for (let i = 0; i < 10; i ++) {
       noStroke()
       fill(255, 209, 209)
-        drawingContext.shadowBlur = 12;
+        drawingContext.shadowBlur = 5;
   drawingContext.shadowColor = color(207, 7, 99);
     ellipse(0, 30, 20, 80);
     rotate(PI/5);
