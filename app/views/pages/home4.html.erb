@@ -1,0 +1,76 @@
+<script>
+function setup(){
+  createCanvas(1000,600);
+  noLoop();
+}
+
+function draw(){
+  background(255)
+  stroke(0);
+  strokeWeight(10);
+  translate(width/2,height-2);
+  // drawingContext.shadowBlur = 12;
+  // drawingContext.shadowColor = color(255, 248, 182);
+      let greenBlueGradient = drawingContext.createLinearGradient(50, 75, 100, 100);
+    greenBlueGradient.addColorStop(0, 'yellowgreen');
+    greenBlueGradient.addColorStop(.7, 'turquoise');
+    drawingContext.fillStyle = greenBlueGradient;
+  branch(0);
+
+}
+
+function branch(depth){
+  if (depth < 12) {
+    line(0,0,0,-height/10); // draw a line going up
+    {
+      translate(0,-height/10); // move the space upwards
+      rotate(random(-0.05,0.05));  // random wiggle - ramas mas deformes a valoes mas altos
+
+      if (random(1.0) < 0.9){ // branching
+        rotate(0.3); // rotate to the right
+        scale(0.8); // scale down
+
+        push(); // now save the transform state
+        branch(depth + 1); // start a new branch!
+        pop(); // go back to saved state
+
+        rotate(-0.6); // rotate back to the left
+
+        push(); // save state
+        branch(depth + 1);   // start a second new branch
+        pop(); // back to saved state
+     }
+      else { // no branch - continue at the same depth
+        branch(depth);
+      }
+    }
+  } else
+  {
+    let = lengthFactor = 200;
+    // fill(random([159,238]),random([0,54]),random([63,126]))
+    fill(205,83,107)
+
+    // fill(0, 141, 158);
+    noStroke();
+
+    // drawingContext.rect(30, 20, 55, 55, 20, 15, 10, 5);
+    // drawingContext.fill();
+    // stroke(159,0,63);
+    // strokeWeight(35);
+    // fill(238,54,126);
+    // bezier(131,225,109,560,291,202,131,225);
+
+
+    bezier(131,225,109,48,291,202,131,225);
+    // ellipse(6,5,200,200)
+  }
+}
+
+
+
+
+function mouseReleased(){
+  redraw();
+}
+
+</script>

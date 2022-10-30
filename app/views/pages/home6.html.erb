@@ -1,0 +1,373 @@
+<script>
+// SKETCH
+let mode;
+let defaultXoff;
+
+function saveIMG() {
+  save('fractal tree.png')
+}
+
+function setup() {
+  createCanvas(400, 400);
+
+  // Tres modos de fondo, en la mañana, en la tarde y en la noche
+  mode = int(random(0, 3));
+  setColorScheme(mode);
+
+  defaultXoff = random(0, 1000);
+  let sunWidthPos = width * random(0.2, 0.8);
+  let sunHeightPos = height * random(0.2, 1);
+  let colIndex = floor(map(sunHeightPos, 160, height, 4, -1));
+
+  if (colIndex >= 0) {
+    backgroundGradient(backCol[colIndex]);
+    drawSun(sunWidthPos, sunHeightPos);
+    if (mode != 2) {
+      backgroundMountains(135, 250, 0.015, mCol1[colIndex]);
+    }
+    backgroundMountains(50, 110, 0.006, mCol2[colIndex]);
+    backgroundTrees(50, 110, 0.006, mCol2[colIndex], leafCol, 9, 0.002);
+    backgroundMountains(15, 45, 0.002, mCol3[colIndex]);
+    backgroundTrees(15, 45, 0.002, mCol3[colIndex], leafCol, 13, 0.004);
+
+    let tree = new Tree(createVector(width / 2, height), leafCol, branchCol);
+    tree.draw();
+  } else {
+    background(21, 34, 56)
+    drawMoonStars();
+    backgroundMountains(135, 250, 0.015, [28, 28, 38]);
+    backgroundMountains(50, 110, 0.006, [10, 100]);
+    backgroundTrees(50, 110, 0.006, branchColN, leafColN, 9, 0.002);
+    backgroundMountains(15, 45, 0.002, [10, 100]);
+    backgroundTrees(15, 45, 0.002, branchColN, leafColN, 13, 0.004);
+
+    let tree = new Tree(createVector(width / 2, height), leafColN, branchColN);
+    tree.draw();
+  }
+
+  button = createButton('save image');
+  button.size(150, 40);
+  button.style('font-size', '22px');
+  button.style('background-color', 'white')
+  button.mousePressed(saveIMG);
+
+  msg = createDiv("&#x2661 refresh page to create your favorite random fractal tree<BR/>be ready to save, you won't see the same image twice! &#x2661");
+  if (colIndex > 1) {
+    msg.style('color', 'black');
+  } else {
+    msg.style('color', 'white');
+  }
+  msg.style('font-size', '22px');
+  msg.style('font-family', 'Garamond');
+  msg.style('font-weight', 'bold');
+  msg.position(10, 10);
+  noLoop();
+}
+
+// BACKGROUND
+function backgroundMountains(hMin, hMax, inc, col) {
+  var xoff = defaultXoff
+  let y;
+
+  noStroke();
+  fill(color(col));
+
+  beginShape();
+  for (let x = 0; x < width; x++) {
+    y = map(noise(xoff), 0, 1, height - hMin, height - hMax);
+    vertex(x, y);
+    xoff += inc;
+  }
+  vertex(width, height);
+  vertex(0, height);
+  endShape();
+}
+
+function backgroundTrees(hMin, hMax, inc, branchs, leafs, len, prob) {
+  let y;
+  var xoff = defaultXoff + 10 * inc;
+  for (let x = 10; x < width - 10; x++) {
+    y = map(noise(xoff), 0, 1, height - hMin, height - hMax);
+    if (random() < prob) {
+      let btree = new BackTree(createVector(x, y), branchs, leafs, len);
+      btree.draw()
+      x += 20;
+      xoff += inc * 20;
+    }
+    xoff += inc;
+  }
+
+}
+
+function backgroundGradient(col) {
+  let c1 = [];
+  let c2;
+
+  c2 = color(col);
+  for (let c of col) {
+    c1.push(c + 60);
+  }
+  c1 = color(c1);
+
+  for (let y = 0; y < height; y += 0.5) {
+    n = map(y, 0, height, 0, 1);
+    let newc = lerpColor(c1, c2, n);
+    stroke(newc);
+    line(0, y, width, y + 1);
+  }
+
+}
+
+function drawSun(sunWidth, sunHeight) {
+  let colG = map(sunHeight, 160, 640, 200, 50);
+  let colB = map(sunHeight, 160, 640, 50, 0);
+  let size = map(sunHeight, 160, 640, 0, 100);
+
+  noStroke();
+  for (let i = 100; i > 0; i -= 5) {
+    fill(255, colG, colB, i);
+    ellipse(sunWidth, sunHeight, size + i);
+  }
+}
+
+
+function drawMoonStars() {
+  for (let i = 0; i < 150; i++) {
+    let x = random(width);
+    let y = random(height);
+    let alph = random(10, 100);
+    stroke(255, alph);
+    strokeWeight(random(1, 3));
+    point(x, y);
+  }
+
+  let xpos = random(100, width - 100);
+  let ypos = random(100, 300);
+  let r = random(80, 150)
+  noStroke();
+  fill(240, 240, 190, 10);
+  ellipse(xpos, ypos, r + 20);
+  fill(240, 240, 190, 20);
+  ellipse(xpos, ypos, r + 10);
+  for (let i = 100; i > 0; i -= 10) {
+    fill(240, 240, 190, i);
+    ellipse(xpos, ypos, r);
+  }
+
+
+}
+
+// COLORS
+let leafColN;
+let branchColN;
+
+
+let leafCol;
+let branchCol;
+let backCol;
+let mCol1;
+let mCol2;
+let mCol3;
+let fac = -10;
+
+function setColorScheme(n) {
+  switch (n) {
+    case 0:
+      backCol = [
+        [90, 60, 60],
+        [118, 91, 91],
+        [154, 131, 131],
+        [193, 161, 161]
+      ];
+
+      leafCol = [
+        [47, 156, 149],
+        [64, 201, 162],
+        [163, 247, 181]
+      ];
+      branchCol = [102, 65, 71];
+
+      mCol1 = getNewColArr(backCol, fac + 10);
+      mCol2 = getNewColArr(backCol, 2 * fac);
+      mCol3 = getNewColArr(backCol, 3 * fac);
+
+      break;
+    case 1:
+      backCol = [
+        [103, 88, 51],
+        [148, 127, 73],
+        [186, 159, 92],
+        [163, 154, 132]
+      ];
+
+      leafCol = [
+        [151, 160, 99],
+        [126, 137, 61],
+        [56, 72, 25]
+      ];
+      branchCol = [139, 99, 47];
+
+      mCol1 = getNewColArr(backCol, fac + 10);
+      mCol2 = getNewColArr(backCol, 2 * fac);
+      mCol3 = getNewColArr(backCol, 3 * fac);
+      break;
+    case 2:
+      backCol = [
+        [77, 84, 99],
+        [104, 126, 144],
+        [152, 219, 206],
+        [213, 240, 235]
+      ];
+
+      leafCol = [
+        [250, 224, 83],
+        [241, 235, 156],
+        [250, 141, 83]
+      ];
+      branchCol = [55,23,10];
+
+      mCol1 = [
+        [81,58,36],
+        [111,98,78],
+        [180,148,119],
+        [200,165,133]
+      ]
+      mCol2 = getNewColArr(mCol1, 2 * -7);
+      mCol3 = getNewColArr(mCol2, 3 * -7);
+
+      break;
+  }
+}
+
+
+branchColN = [32, 32, 41];
+leafColN = [
+  [60, 88, 90],
+  [37, 54, 69],
+  [100, 120, 90]
+];
+
+
+function getNewColArr(a, val) {
+  let ret = [];
+  for (let i = 0; i < a.length; i++) {
+    ret.push([])
+    for (let j = 0; j < a[0].length; j++) {
+      ret[i][j] = a[i][j] + val;
+    }
+  }
+  return ret;
+}
+
+// TREE
+class Tree {
+
+  constructor(start, leafs, branchs) {
+    this.pos = createVector(start.x, start.y);
+    this.theta = PI / random(4, 6);
+    this.len = random(120, 150);
+    this.ratio = random(0.6, 0.77);
+    this.stroke = this.len / random(7, 12);
+    this.leafColors = leafs;
+    this.branchCol = branchs;
+  }
+
+  draw() {
+    translate(this.pos);
+    stroke(this.branchCol);
+    strokeWeight(this.stroke);
+    let r = random(-0.5, -0.3)
+    line(0, 0, 0, r * this.len);
+    translate(0, r * this.len);
+    this.branch(this.len, this.stroke);
+  }
+
+  branch(len, str) {
+    let r = random(-5, +5)
+    strokeWeight(str);
+    line(0, 0, 0, -len + r);
+    translate(0, -len + r);
+    len *= this.ratio;
+    str *= this.ratio;
+
+
+    if (len < 4) {
+      noStroke();
+      fill(this.leafColors[int(random(0, 3))]);
+      ellipse(0, 0, random(6, 10), random(6, 10))
+      return;
+    }
+
+    push();
+    rotate(this.theta + random(-0.5, 0.5));
+    this.branch(len, str);
+    pop();
+
+    push();
+    rotate(-this.theta + random(-0.5, 0.5));
+    this.branch(len, str);
+    pop();
+
+  }
+}
+
+// BACKTREES
+class BackTree {
+
+  constructor(start, branchs, leafs, len) {
+    this.pos = createVector(start.x, start.y);
+    this.theta = PI / random(4, 6);
+    this.len = random(len-1,len+1);
+    this.ratio = random(0.6, 0.77);
+    this.stroke = this.len / random(7, 12);
+    this.leafColors = leafs;
+    this.branchCol = branchs;
+  }
+
+  draw() {
+    push();
+    translate(this.pos);
+    stroke(this.branchCol);
+    strokeWeight(this.stroke);
+    let r = random(-0.5, -0.3)
+    line(0, 0, 0, r * this.len);
+    translate(0, r * this.len);
+    this.branch(this.len, this.stroke);
+    pop();
+  }
+
+  branch(len, str) {
+    let r = random()
+    strokeWeight(str);
+    line(0, 0, 0, -len + r);
+    translate(0, -len + r);
+    len *= this.ratio;
+    str *= this.ratio;
+
+
+    if (len < 1) {
+      noStroke();
+      var c = color(this.leafColors[int(random(0,3))]);
+      c.setAlpha(50);
+      fill(c);
+      ellipse(0, 0, random(2,4), random(2,4))
+      return;
+    }
+
+    push();
+    rotate(this.theta + random(-0.5, 0.5));
+    this.branch(len, str);
+    pop();
+
+    push();
+    rotate(-this.theta + random(-0.5, 0.5));
+    this.branch(len, str);
+    pop();
+
+  }
+}
+
+
+
+
+</script>

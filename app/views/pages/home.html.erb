@@ -1,20 +1,103 @@
+<style>
+canvas {
+  border-radius: 12px;
+}
+</style>
+
 <script>
-function setup(){
-  createCanvas(1000,600);
+
+function setup() {
+  createCanvas(600, 500);
   noLoop();
+  let sunWidthPos = width * random(0.2, 0.8);
+  let sunHeightPos = height * random(0.2, 1);
+  let colIndex = floor(map(sunHeightPos, 160, height, 4, -1));
+  let backCol = [
+          [63, 59, 108],
+          [98, 79, 130],
+          [159, 115, 171],
+          [163, 199, 214]
+        ]
+  backgroundGradient(backCol[3]);
+  drawSun();
+  print(colIndex, backCol[colIndex])
+  let  defaultXoff = random(0, 1000);
+
+        backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
+        backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
+    backgroundMountains(50, 110, 0.006,[65,66,2],defaultXoff);
+    backgroundMountains(15, 65, 0.1,[236,59,6],defaultXoff);
+    backgroundMountains(15, 45, 0.8,[0,255,0],defaultXoff);
+
 }
 
+function backgroundGradient(col) {
+  let c1 = [];
+  let c2;
+
+  c2 = color(col);
+  for (let c of col) {
+    c1.push(c + 60);
+  }
+  c1 = color(c1);
+
+  for (let y = 0; y < height; y += 0.5) {
+    n = map(y, 0, height, 0, 1);
+
+    let newc = lerpColor(color(14, 24, 95), color(185, 255, 248), n);
+    stroke(newc);
+    line(0, y, width, y + 1);
+  }
+
+}
+
+function drawSun() {
+  // let colG = map(sunHeight, 160, 640, 200, 50);
+  // let colB = map(sunHeight, 160, 640, 50, 0);
+  // let size = map(sunHeight, 160, 640, 0, 100);
+
+  // noStroke();
+  // fill(255, colG, colB, 50);
+  // ellipse(sunWidth, sunHeight, size);
+  translate(0,0);
+  noStroke();
+    fill(230, 230, 230, 50);
+    ellipse(200, 130, 170, 170);
+    fill(230, 230, 230, 150);
+    ellipse(200, 130, 130, 130);
+    fill(230, 230, 230, 200);
+    ellipse(200, 130, 110, 110);
+    fill(230, 230, 230);
+    ellipse(200, 130, 70, 70);
+}
+
+function backgroundMountains(hMin, hMax, inc, col, defaultXoff) {
+
+
+  var xoff = defaultXoff
+
+  let y;
+
+  noStroke();
+  fill(color(col),75);
+
+  beginShape();
+  for (let x = 0; x < width; x++) {
+    y = map(noise(xoff), 0, 1, height - hMin, height - hMax);
+    vertex(x, y);
+    xoff += inc;
+  }
+  vertex(width, height);
+  vertex(0, height);
+  endShape();
+}
+
+
 function draw(){
-  background(255)
-  stroke(0);
-  strokeWeight(10);
+  stroke(28, 10, 0);
+
+  strokeWeight(15);
   translate(width/2,height-2);
-  // drawingContext.shadowBlur = 12;
-  // drawingContext.shadowColor = color(255, 248, 182);
-      let greenBlueGradient = drawingContext.createLinearGradient(50, 75, 100, 100);
-    greenBlueGradient.addColorStop(0, 'yellowgreen');
-    greenBlueGradient.addColorStop(.7, 'turquoise');
-    drawingContext.fillStyle = greenBlueGradient;
   branch(0);
 
 }
@@ -24,9 +107,9 @@ function branch(depth){
     line(0,0,0,-height/10); // draw a line going up
     {
       translate(0,-height/10); // move the space upwards
-      rotate(random(-0.05,0.05));  // random wiggle - ramas mas deformes a valoes mas altos
+      rotate(random(-0.2,0.2));  // random wiggle - ramas mas deformes a valoes mas altos
 
-      if (random(1.0) < 0.9){ // branching
+      if (random(1.0) < 0.8){ // branching
         rotate(0.3); // rotate to the right
         scale(0.8); // scale down
 
@@ -47,11 +130,20 @@ function branch(depth){
   } else
   {
     let = lengthFactor = 200;
-    // fill(random([159,238]),random([0,54]),random([63,126]))
-    fill(205,83,107)
+
+    // let colors = [[246, 246, 201],[186, 209, 194],[79, 160, 149]]
+    let col = [[255, 185, 185],[255, 221, 210],[255, 141, 199]]
+      // fill(random(188,255), 226, 158, 250)
+
+    fill(28, 103, 88)
+    // stroke(100, 126, 0)
+
+    // fill(205,83,107)
 
     // fill(0, 141, 158);
     noStroke();
+      bezier(131,225,109,48,291,202,131,225);
+
 
     // drawingContext.rect(30, 20, 55, 55, 20, 15, 10, 5);
     // drawingContext.fill();
@@ -60,17 +152,23 @@ function branch(depth){
     // fill(238,54,126);
     // bezier(131,225,109,560,291,202,131,225);
 
+    // bezier(143,279,0,0,random([200,400]),random([100,181]),143,279);
+    // bezier(143,279,0,0,400,18,143,279);
+    for (let i = 0; i < 10; i ++) {
+      noStroke()
+      fill(255, 209, 209)
+        drawingContext.shadowBlur = 12;
+  drawingContext.shadowColor = color(207, 7, 99);
+    ellipse(0, 30, 20, 80);
+    rotate(PI/5);
 
-    bezier(131,225,109,48,291,202,131,225);
-    // ellipse(6,5,200,200)
+  }
+
+
+
   }
 }
 
 
-
-
-function mouseReleased(){
-  redraw();
-}
 
 </script>
