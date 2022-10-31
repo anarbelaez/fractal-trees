@@ -1,3 +1,11 @@
+<div class="row">
+  <div class="col-5 col-md-8" id="canvasTree">
+
+
+
+  </div>
+</div>
+
 <style>
 canvas {
   border-radius: 12px;
@@ -5,57 +13,65 @@ canvas {
 </style>
 
 <script>
+var canvasDiv = document.getElementById('canvasTree');
 
+// Setup: controla el tamano del canvas y el background (sun-moon, gradient, mountains)
 function setup() {
   createCanvas(600, 500);
   noLoop();
-  backgroundGradient();
+
+  gradient([6, 82, 221],[18, 203, 196]);
   drawSun();
-  let  defaultXoff = random(0, 1000);
-  backgroundMountains(56, 250, 0.015, [28,56,99],defaultXoff);
-  backgroundMountains(135, 250, 0.015, [28,56,99],defaultXoff);
-  backgroundMountains(50, 110, 0.006,[65,66,2],defaultXoff);
-  backgroundMountains(15, 65, 0.1,[236,59,6],defaultXoff);
-  backgroundMountains(15, 45, 0.8,[0,255,0],defaultXoff);
+  let xOff = random(0, 1000);
+  mountains(56, 250, 0.015, 100,xOff);
+  mountains(135, 250, 0.015, 0,xOff);
+  // mountains(50, 110, 0.006,50,xOff);
+  // mountains(15, 65, 0.1,68,xOff);
+  mountains(15, 45, 0.2,[196, 229, 56],xOff);
 }
 
-function backgroundGradient() {
+// Draw: Controla el arbol
+function draw(){
+  stroke(25,20,23);
+  strokeWeight(13);
+  translate(width/2,height-2);
+  branch(0);
+}
+
+function gradient(begin, end) {
   for (let y = 0; y < height; y += 0.5) {
     n = map(y, 0, height, 0, 1);
-    let newc = lerpColor(color(14, 24, 95), color(185, 255, 248), n);
-    stroke(newc);
+    let newC = lerpColor(color(begin), color(end), n);
+    stroke(newC);
     line(0, y, width, y + 1);
   }
 }
 
 function drawSun() {
-  translate(0,0);
   noStroke();
-  fill(230, 230, 230, 50);
+  // Los dos primeros param. de la elipse se refieren a x, y donde inicia la forma
+  fill(223, 249, 251, 50);
   ellipse(200, 130, 170, 170);
-  fill(230, 230, 230, 150);
+  fill(223, 249, 251, 150);
   ellipse(200, 130, 130, 130);
-  fill(230, 230, 230, 200);
+  fill(223, 249, 251, 200);
   ellipse(200, 130, 110, 110);
-  fill(230, 230, 230);
+  fill(223, 249, 251);
   ellipse(200, 130, 70, 70);
 }
 
-function backgroundMountains(hMin, hMax, inc, col, defaultXoff) {
-  var xoff = defaultXoff
+function mountains(hMin, hMax, inc, col, xOff) {
   let y;
-
   noStroke();
   squareColor = color(col);
-  squareColor.setAlpha(128);
+  squareColor.setAlpha(65);
   fill(squareColor);
-  // fill(color(col));
 
   beginShape();
   for (let x = 0; x < width; x++) {
-    y = map(noise(xoff), 0, 1, height - hMin, height - hMax);
+    y = map(noise(xOff), 0, 1, height - hMin, height - hMax);
     vertex(x, y);
-    xoff += inc;
+    xOff += inc;
   }
   vertex(width, height);
   vertex(0, height);
@@ -63,86 +79,94 @@ function backgroundMountains(hMin, hMax, inc, col, defaultXoff) {
 }
 
 
-function draw(){
-  stroke(28, 10, 0);
-
-  strokeWeight(15);
-  translate(width/2,height-2);
-  branch(0);
-
-}
-
 function branch(depth){
   if (depth < 11) {
-    line(0,0,0,-height/10); // draw a line going up
+    line(0,0,0,-height/8); // Linea madre, original 10
     {
-      translate(0,-height/10); // move the space upwards
-      rotate(random(-0.2,0.2));  // random wiggle - ramas mas deformes a valoes mas altos
+      translate(0,-height/8); // Extiende el arbol, original 10
+      rotate(random(-0.2,0.2));  // Ramas mas deformes a valores mas altos, original 0.05
 
-      if (random(1.0) < 0.7){ // branching
-        rotate(0.3); // rotate to the right 0.25 arbolito en copita
-        scale(0.8); // scale down
+      if (random(1) < 0.8){ // Tamaño y dispersion de las hojas, original 0.6. Valores pequeños, arbol mas grande. 1 arbol en cono
+        rotate(0.3); // rotacion de la parte derecha
+        scale(0.8);
 
-        push(); // now save the transform state
-        branch(depth + 1); // start a new branch!
-        pop(); // go back to saved state
+        push(); // salvar el estado actual
+        branch(depth + 1); // inicia una nueva branch
+        pop(); // reiniciar el estado de la branch
 
-        rotate(-0.6); // rotate back to the left
-
-        push(); // save state
-        branch(depth + 1);   // start a second new branch
-        pop(); // back to saved state
+        rotate(-0.6); // rotar a la izquieda
+        push(); // salvar
+        branch(depth + 1); // crear una segunda branch
+        pop(); // reiniciar
      }
-      else { // no branch - continue at the same depth
+      else { // si no se crea una branch, entonces vuelva a llamarse (recursion)
         branch(depth);
       }
     }
   } else
   {
-    let = lengthFactor = 200;
-
-    // let colors = [[246, 246, 201],[186, 209, 194],[79, 160, 149]]
-    let col = [[255, 185, 185],[255, 221, 210],[255, 141, 199]]
-      // fill(random(188,255), 226, 158, 250)
-
-    let coly = [28, 103, 88]
-  squareColor = color(coly);
-  squareColor.setAlpha(128);
-  fill(squareColor);
-    // fill(28, 103, 88)
-    // stroke(100, 126, 0)
-
-    // fill(205,83,107)
-
-    // fill(0, 141, 158);
+    // Una vez terminado el arbol se crean las flores
     noStroke();
-      bezier(131,225,109,48,291,202,131,225);
 
+    // Colores random
+    // fill(random(188,255), 226, 158, 250)
+    // fill(28, 103, 88) // Verde bonito
+    fill(0, 141, 158) // Verde bonito 2
+    // fill(238,54,126) // Pink
+    // fill(255,141,199) // Light pink
+    // let colores = [[255,116,177], [255,161,207]]
+    // fill(color(random(colores))) // Para flores de dos colores
+    // fill(205,83,107) // Peach
 
-    // drawingContext.rect(30, 20, 55, 55, 20, 15, 10, 5);
-    // drawingContext.fill();
-    // stroke(159,0,63);
-    // strokeWeight(35);
-    // fill(238,54,126);
-    // bezier(131,225,109,560,291,202,131,225);
+    // Color de las hojas
+    // let col = color(66,95,87);
+    // col.setAlpha(128); // Opacidad
+    // fill(col);
 
-    // bezier(143,279,0,0,random([200,400]),random([100,181]),143,279);
-    // bezier(143,279,0,0,400,18,143,279);
+    // Glow
+    // drawingContext.shadowBlur = 5;
+    // drawingContext.shadowColor = color(200,255,138);
+
+    // Forma de las hojas
+    ellipse(56, 46, 55, 55)
+    // bezier(131,225,109,48,291,202,131,225);
+    // bezier(143,279,0,0,400,181,143,279);
+
     for (let i = 0; i < 10; i ++) {
       noStroke()
-      fill(255, 209, 209)
-        drawingContext.shadowBlur = 5;
-  drawingContext.shadowColor = color(207, 7, 99);
-    ellipse(0, 30, 20, 80);
-    rotate(PI/5);
-
-  }
-
-
-
+      // Glow
+      drawingContext.shadowBlur = 5;
+      drawingContext.shadowColor = color(255,65);
+      fill(255,141,199)
+      ellipse(0, 30, 20, 80);
+      rotate(PI/5); // Angulo de rotacion, si el denominador cambia, cambia la forma de la flor
+    }
   }
 }
 
 
 
 </script>
+
+<%# // MORNING COLORS
+// BACK 34, 166, 179 223, 246, 255
+// SUN 255,231,91
+// MOUNTAINS 66, 95, 87
+// 116,159,130
+// 168,232,144
+// 207,255,141
+// GRASS 66,133,91
+// BRANCH 60,35,23
+// LEAVES 106, 176, 76
+// FLOWERS 249, 202, 36 o 246, 229, 141
+
+// NIGHT COLORS
+// SUN 255,231,91
+// MOUNTAINS 66, 95, 87
+// 116,159,130
+// 168,232,144
+// 207,255,141
+// GRASS 66,133,91
+// BRANCH 60,35,23
+// LEAVES 106, 176, 76
+// FLOWERS 249, 202, 36 o 246, 229, 141 %>
